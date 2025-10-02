@@ -41,3 +41,7 @@ cryptography==44.0.0
 matplotlib-inline==0.1.7
 ipython==8.32.0
 jupyter==1.1.1
+
+gunicorn==21.2.0
+
+
