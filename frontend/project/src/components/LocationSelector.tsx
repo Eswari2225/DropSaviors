@@ -46,8 +46,20 @@ const LocationSelector: React.FC<LocationSelectorProps> = ({
       .catch((error) => {
         console.error('Error fetching districts:', error);
         setDistricts([]);
-        // Show user-friendly error message
-        alert('Error connecting to backend. Please check if the server is running.');
+        // Don't show alert immediately - let the user try again
+        console.log('Will retry fetching districts in 2 seconds...');
+        setTimeout(() => {
+          fetch('/api/meta')
+            .then((res) => res.json())
+            .then((data) => {
+              setDistricts(data.districts || []);
+            })
+            .catch((retryError) => {
+              console.error('Retry failed:', retryError);
+              // Only show alert after retry fails
+              alert('Error connecting to backend. Please refresh the page.');
+            });
+        }, 2000);
       });
   }, []);
 

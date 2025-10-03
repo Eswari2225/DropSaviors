@@ -761,13 +761,7 @@ def generate_structure_image(shape, dims, filename):
         return ""
 
 # ------------------- API endpoints (JSON) -------------------
-@app.route('/api/meta')
-def api_meta():
-    return jsonify({
-        'districts': districts, 
-        'subdistricts': subdistrict_map,
-        'system_info': SYSTEM_INFO
-    })
+# Removed duplicate - using the better implementation below
 
 @app.route('/api/rainfall')
 def api_rainfall():
@@ -1030,7 +1024,15 @@ def api_user_choice():
 @app.route('/')
 def index():
     """Serve the React frontend"""
+    print("Serving frontend index.html")
     return render_template('index.html')
+
+@app.before_request
+def log_request_info():
+    """Log all incoming requests for debugging"""
+    print(f"Incoming request: {request.method} {request.url}")
+    if request.method == 'POST':
+        print(f"Request data: {request.get_json()}")
 
 @app.route('/health')
 def health_check():
@@ -1050,25 +1052,28 @@ def api_health():
         'timestamp': datetime.now().isoformat()
     })
 
+@app.route('/api/test')
+def api_test():
+    """Simple test endpoint"""
+    return jsonify({
+        'message': 'Backend is working!',
+        'timestamp': datetime.now().isoformat(),
+        'districts_count': len(districts) if 'districts' in globals() else 0
+    })
+
 @app.route("/api/meta", methods=["GET"])
 def get_meta():
     try:
-        df = pd.read_csv("dataset/districts_rainfall.csv")
-
-        # Normalize column names
-        df.columns = [c.strip().lower() for c in df.columns]
-
-        # District & subdivision keys (adjust if column names differ)
-        districts = sorted(df["district"].dropna().unique().tolist())
-        subdistricts = {}
-        if "subdivision" in df.columns:
-            for d in districts:
-                subs = df[df["district"] == d]["subdivision"].dropna().unique().tolist()
-                subdistricts[d] = sorted(subs)
-
-        return jsonify({"districts": districts, "subdistricts": subdistricts})
+        # Use the global variables that are already loaded
+        return jsonify({
+            "districts": districts, 
+            "subdistricts": subdistrict_map,
+            "system_info": SYSTEM_INFO,
+            "status": "success"
+        })
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        print(f"Error in /api/meta: {e}")
+        return jsonify({"error": str(e), "status": "error"}), 500
 
 
 
