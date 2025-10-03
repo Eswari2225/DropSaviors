@@ -30,7 +30,7 @@ const LocationSelector: React.FC<LocationSelectorProps> = ({
 
   // Fetch districts and subdistricts from backend
   useEffect(() => {
-    fetch('http://localhost:5000/api/meta')
+    fetch('/api/meta')
       .then((res) => res.json())
       .then((data) => {
         setDistricts(data.districts || []);
@@ -47,7 +47,7 @@ const LocationSelector: React.FC<LocationSelectorProps> = ({
       setSubdistricts([]);
       return;
     }
-    fetch('http://localhost:5000/api/meta')
+    fetch('/api/meta')
       .then((res) => res.json())
       .then((data) => {
         setSubdistricts((data.subdistricts && data.subdistricts[district]) || []);

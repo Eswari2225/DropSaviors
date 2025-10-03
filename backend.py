@@ -19,9 +19,9 @@ from PIL import Image as PILImage
 import tempfile
 
 # ---------------- Flask App ----------------
-app = Flask(__name__)
-app.secret_key = "replace_with_a_stronger_secret_key_here"
-CORS(app, supports_credentials=True, origins=['http://localhost:5173', 'http://127.0.0.1:5173'])
+app = Flask(__name__, static_folder='static', template_folder='templates')
+app.secret_key = os.environ.get('SECRET_KEY', 'replace_with_a_stronger_secret_key_here')
+CORS(app, supports_credentials=True, origins=['http://localhost:5173', 'http://127.0.0.1:5173', 'https://*.onrender.com'])
 
 # ---------------- Dataset loading with fallback ----------------
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -1022,6 +1022,11 @@ def api_user_choice():
         return jsonify({'error': f'Failed to save choice: {str(e)}'}), 500
 
 # ------------------- Routes -------------------
+@app.route('/')
+def index():
+    """Serve the React frontend"""
+    return render_template('index.html')
+
 @app.route("/api/meta", methods=["GET"])
 def get_meta():
     try:
@@ -1541,4 +1546,9 @@ if __name__ == "__main__":
     print("PDF Download endpoints:")
     print("  - /api/download_pdf (JSON response with base64)")
     print("  - /api/simple_pdf_download (Direct file download)")
-    app.run(debug=True, host="0.0.0.0", port=5000)
+    
+    # Production settings
+    port = int(os.environ.get('PORT', 5000))
+    debug = os.environ.get('FLASK_ENV') == 'development'
+    
+    app.run(debug=debug, host="0.0.0.0", port=port)
