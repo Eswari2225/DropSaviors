@@ -31,14 +31,24 @@ const LocationSelector: React.FC<LocationSelectorProps> = ({
   // Fetch districts and subdistricts from backend
   useEffect(() => {
     fetch('/api/meta')
-      .then((res) => res.json())
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error(`HTTP error! status: ${res.status}`);
+        }
+        return res.json();
+      })
       .then((data) => {
         setDistricts(data.districts || []);
         if (district) {
           setSubdistricts((data.subdistricts && data.subdistricts[district]) || []);
         }
       })
-      .catch(() => setDistricts([]));
+      .catch((error) => {
+        console.error('Error fetching districts:', error);
+        setDistricts([]);
+        // Show user-friendly error message
+        alert('Error connecting to backend. Please check if the server is running.');
+      });
   }, []);
 
   // Update subdistricts when district changes
@@ -48,11 +58,19 @@ const LocationSelector: React.FC<LocationSelectorProps> = ({
       return;
     }
     fetch('/api/meta')
-      .then((res) => res.json())
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error(`HTTP error! status: ${res.status}`);
+        }
+        return res.json();
+      })
       .then((data) => {
         setSubdistricts((data.subdistricts && data.subdistricts[district]) || []);
       })
-      .catch(() => setSubdistricts([]));
+      .catch((error) => {
+        console.error('Error fetching subdistricts:', error);
+        setSubdistricts([]);
+      });
   }, [district]);
 
   const handleDistrictChange = (districtName: string) => {

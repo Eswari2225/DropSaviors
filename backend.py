@@ -21,7 +21,12 @@ import tempfile
 # ---------------- Flask App ----------------
 app = Flask(__name__, static_folder='static', template_folder='templates')
 app.secret_key = os.environ.get('SECRET_KEY', 'replace_with_a_stronger_secret_key_here')
-CORS(app, supports_credentials=True, origins=['http://localhost:5173', 'http://127.0.0.1:5173', 'https://*.onrender.com'])
+CORS(app, supports_credentials=True, origins=[
+    'http://localhost:5173', 
+    'http://127.0.0.1:5173', 
+    'https://*.onrender.com',
+    'https://dropsaviors-2025.onrender.com'
+])
 
 # ---------------- Dataset loading with fallback ----------------
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -1026,6 +1031,24 @@ def api_user_choice():
 def index():
     """Serve the React frontend"""
     return render_template('index.html')
+
+@app.route('/health')
+def health_check():
+    """Health check endpoint for debugging"""
+    return jsonify({
+        'status': 'healthy',
+        'message': 'Backend is running',
+        'timestamp': datetime.now().isoformat()
+    })
+
+@app.route('/api/health')
+def api_health():
+    """API health check endpoint"""
+    return jsonify({
+        'status': 'healthy',
+        'api': 'working',
+        'timestamp': datetime.now().isoformat()
+    })
 
 @app.route("/api/meta", methods=["GET"])
 def get_meta():
