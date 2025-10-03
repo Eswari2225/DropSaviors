@@ -82,7 +82,7 @@ const NewHomeForm: React.FC<NewHomeFormProps> = ({
       const formData = new FormData();
       formData.append('cad_file', file);
 
-      const response = await fetch('http://127.0.0.1:5000/api/detect_areas', {
+      const response = await fetch('/api/detect_areas', {
         method: 'POST',
         body: formData
       });

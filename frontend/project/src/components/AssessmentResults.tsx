@@ -39,7 +39,7 @@ const AssessmentResults: React.FC<AssessmentResultsProps> = ({ results, onBack }
       
       console.log('Sending request with data:', requestData);
 
-      const response = await fetch("http://127.0.0.1:5000/api/download_pdf", {
+      const response = await fetch("/api/download_pdf", {
         method: "POST",
         headers: { 
           "Content-Type": "application/json",
@@ -104,7 +104,7 @@ const AssessmentResults: React.FC<AssessmentResultsProps> = ({ results, onBack }
 
   const handleCustomSystemCalculation = async () => {
     try {
-      const response = await fetch("http://127.0.0.1:5000/api/calculate_system", {
+      const response = await fetch("/api/calculate_system", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -139,7 +139,7 @@ const AssessmentResults: React.FC<AssessmentResultsProps> = ({ results, onBack }
 
   const saveUserChoice = async (choice: string) => {
     try {
-      await fetch("http://127.0.0.1:5000/api/user_choice", {
+      await fetch("/api/user_choice", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ choice })
